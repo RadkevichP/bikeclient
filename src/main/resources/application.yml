@@ -1,0 +1,22 @@
+server:
+  port: 8082
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          custom-client:
+            client-id: pts2.elinext.com
+            client-secret: super_secret
+            client-name: pts2.elinext.com
+            scope: email api1 profile openid
+            provider: elinextis
+            redirect-uri-template: http://localhost:8082/login/oauth2/code/
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+        provider:
+          elinextis:
+            token-uri: http://212.98.165.50:11084/connect/token
+            authorization-uri: http://212.98.165.50:11084/connect/authorize
+            user-info-uri: http://212.98.165.50:11084/connect/userinfo
+            user-name-attribute: given_name
