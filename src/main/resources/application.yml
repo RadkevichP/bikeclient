@@ -20,3 +20,7 @@ spring:
             authorization-uri: http://212.98.165.50:11084/connect/authorize
             user-info-uri: http://212.98.165.50:11084/connect/userinfo
             user-name-attribute: given_name
+logging:
+  level:
+    root: info
+    org.springframework.web: info

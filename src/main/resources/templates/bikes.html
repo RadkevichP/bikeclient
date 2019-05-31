@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Book Store Main</title>
+    <title>Bike Store Main</title>
     <!-- Bootstrap compiled and minified CSS -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -24,30 +24,35 @@
             <div class="panel panel-primary">
 
                 <div class="panel-heading">
-                    <h1 class="panel-title">Welcome to Book Store!</h1>
+                    <h1 class="panel-title">Welcome to Bike Store!</h1>
                 </div>
                 <div class="panel-body">
-                    <div class="table-responsive" th:if="${not #lists.isEmpty(books)}">
+                    <div class="table-responsive" th:if="${not #lists.isEmpty(bikes)}">
                         <table class="table table-hover ">
                             <thead class="thead-inverse">
                             <tr>
-                                <th>ISBN</th>
-                                <th>Author</th>
-                                <th>Title</th>
-                                <th>Details</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Model</th>
+                                <td>View</td>
                             </tr>
                             </thead>
                             <tr th:remove="all">
                                 <td>123</td>
                                 <td>Ivan Ivanov</td>
                                 <td>Untitled</td>
+                                <td>XXXX</td>
                                 <td><a href="#">View</a></td>
                             </tr>
-                            <tr th:each="book : ${books}">
-                                <td th:text="${book.isbn}">11</td>
-                                <td th:text="${book.author}">Fedor Fedorov</td>
-                                <td th:text="${book.title}">Untitled 2</td>
-                                <td><a href="#" th:href="@{'/book/' + ${book.isbn}}">View</a></td>
+                            <tr th:each="bike : ${bikes}">
+                                <td th:text="${bike.id}">11</td>
+                                <td th:text="${bike.name}">Fedor Fedorov</td>
+                                <td th:text="${bike.email}">Untitled 2</td>
+                                <td th:text="${bike.phone}">Untitled 2</td>
+                                <td th:text="${bike.model}">Untitled 2</td>
+                                <td><a href="#" th:href="@{'/bike/' + ${bike.id}}">View</a></td>
                             </tr>
                         </table>
                     </div>
