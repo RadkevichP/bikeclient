@@ -1,6 +1,8 @@
 server:
   port: 8082
 spring:
+  thymeleaf:
+    cache: false
   security:
     oauth2:
       client:
@@ -9,7 +11,7 @@ spring:
             client-id: pts2.elinext.com
             client-secret: super_secret
             client-name: pts2.elinext.com
-            scope: email api1 profile openid
+            scope: email profile openid
             provider: elinextis
             redirect-uri-template: http://localhost:8082/login/oauth2/code/
             client-authentication-method: basic
