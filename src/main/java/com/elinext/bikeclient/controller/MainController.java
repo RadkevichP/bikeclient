@@ -10,14 +10,12 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,41 +25,52 @@ public class MainController {
 
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final Logger log = LoggerFactory.getLogger(MainController.class);
+    private final String ROLE_CLAIM = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+    private final String MANAGER_ROLE = "MANAGER";
 
     public MainController(OAuth2AuthorizedClientService authorizedClientService) {
         this.authorizedClientService = authorizedClientService;
     }
 
     @RequestMapping("/")
+    //  @PreAuthorize("hasRole('ROLE_USER')") - doesn't work
+    //  @PreAuthorize("hasAuthority('ROLE_USER')") - works fine
+    //  @PreAuthorize("hasRole('MANAGER')") - doesn't work
     public String index(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient auth2AuthorizedClient = this.getAuthorizedClient(authentication);
-
         log.info(authentication.toString());
-        log.info(auth2AuthorizedClient.toString());
-        log.info(auth2AuthorizedClient.getClientRegistration().toString());
-        log.info(auth2AuthorizedClient.getAccessToken().toString());
-
-        authentication.getPrincipal().getAuthorities();
+        authentication.getPrincipal().getAttributes().forEach((k, v) -> log.info(k + " : " + v + v.getClass()));
         model.addAttribute("userName", authentication.getName());
         model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
         return "index";
     }
 
+    @RequestMapping("/adminpage")
+    @PreAuthorize("authentication.getPrincipal().getAttributes()" +
+            ".containsKey('http://schemas.microsoft.com/ws/2008/06/identity/claims/role')")
+    public String adminpage(Model model, OAuth2AuthenticationToken authentication) {
+        Map userAttributes = authentication.getPrincipal().getAttributes();
+        model.addAttribute("userAttributes", userAttributes);
+        return "adminpage";
+    }
+
+    @RequestMapping("/managerpage")
+    @PreAuthorize("authentication.getPrincipal().getAttributes()" +
+            ".containsKey('http://schemas.microsoft.com/ws/2008/06/identity/claims/role')")
+    public String managerpage(Model model, OAuth2AuthenticationToken authentication) {
+        Map userAttributes = authentication.getPrincipal().getAttributes();
+        List<String> roleClaims = (List<String>) authentication.getPrincipal().getAttributes().get(ROLE_CLAIM);
+        if (roleClaims.contains("MANAGER")) {
+            model.addAttribute("userAttributes", userAttributes);
+            return "managerpage";
+        } else return "index";
+
+    }
+
     @RequestMapping("/userinfo")
+    @PreAuthorize("isAuthenticated()")
     public String userinfo(Model model, OAuth2AuthenticationToken authentication) {
-        OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
-        Map userAttributes = Collections.emptyMap();
-        String userInfoEndpointUri = authorizedClient.getClientRegistration()
-                .getProviderDetails().getUserInfoEndpoint().getUri();
-        if (!StringUtils.isEmpty(userInfoEndpointUri)) {
-            userAttributes = WebClient.builder()
-                    .filter(oauth2Credentials(authorizedClient)).
-                            filter(logRequest()).
-                            build()
-                    .get().uri(userInfoEndpointUri)
-                    .retrieve()
-                    .bodyToMono(Map.class).block();
-        }
+        Map userAttributes = authentication.getPrincipal().getAttributes();
         model.addAttribute("userAttributes", userAttributes);
         return "userinfo";
     }
