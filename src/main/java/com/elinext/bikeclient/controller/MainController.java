@@ -40,6 +40,7 @@ public class MainController {
         log.info(auth2AuthorizedClient.toString());
         log.info(auth2AuthorizedClient.getClientRegistration().toString());
         log.info(auth2AuthorizedClient.getAccessToken().toString());
+
         authentication.getPrincipal().getAuthorities();
         model.addAttribute("userName", authentication.getName());
         model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
