@@ -6,20 +6,21 @@ spring:
       client:
         registration:
           custom-client:
-            client-id: pts2.elinext.com
-            client-secret: super_secret
-            client-name: pts2.elinext.com
-            scope: email api1 profile openid
-            provider: elinextis
+            client-id: 0oanfi59ym2seU7N2356
+            client-secret: y5sNVdLHr61ELaKIZGVS_EEagaYgySUKTkZb49mU
+            client-name: PTS2
+            scope: openid profile email
+            provider: okta
             redirect-uri-template: http://localhost:8082/login/oauth2/code/
             client-authentication-method: basic
             authorization-grant-type: authorization_code
         provider:
-          elinextis:
-            token-uri: http://212.98.165.50:11084/connect/token
-            authorization-uri: http://212.98.165.50:11084/connect/authorize
-            user-info-uri: http://212.98.165.50:11084/connect/userinfo
-            user-name-attribute: given_name
+          okta:
+            authorization-uri: https://dev-229121.okta.com/oauth2/default/v1/authorize
+            token-uri: https://dev-229121.okta.com/oauth2/default/v1/token
+            user-info-uri: https://dev-229121.okta.com/oauth2/default/v1/userinfo
+            jwk-set-uri: https://dev-229121.okta.com/oauth2/default/v1/keys
+            user-name-attribute: sub
 logging:
   level:
     root: info
