@@ -33,6 +33,7 @@ public class MainController {
     }
 
     @RequestMapping("/")
+    @PreAuthorize("isAuthenticated()")
     //  @PreAuthorize("hasRole('ROLE_USER')") - doesn't work
     //  @PreAuthorize("hasAuthority('ROLE_USER')") - works fine
     //  @PreAuthorize("hasRole('MANAGER')") - doesn't work
