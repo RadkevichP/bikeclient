@@ -26,7 +26,9 @@ public class ISLogoutHandler extends SecurityContextLogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         super.logout(request, response, authentication);
+
         propagateLogoutToIS((OidcUser) authentication.getPrincipal());
+        log.info("session invalidated");
     }
 
     private void propagateLogoutToIS(OidcUser user) {
@@ -36,10 +38,13 @@ public class ISLogoutHandler extends SecurityContextLogoutHandler {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(endSessionEndpoint)
                 .queryParam("id_token_hint", user.getIdToken().getTokenValue());
+        log.info(builder.toUriString());
         ResponseEntity<String> logoutResponse = restTemplate.getForEntity(builder.toUriString(), String.class);
         if (logoutResponse.getStatusCode().is2xxSuccessful()) {
+            log.info(logoutResponse.toString());
             log.info("Sucessfully logged out in IS");
         } else {
+            log.info(logoutResponse.toString());
             log.info("Logout from IS failed");
         }
 
