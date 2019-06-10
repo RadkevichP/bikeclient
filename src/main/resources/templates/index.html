@@ -12,7 +12,7 @@
     <div style="float:none">&nbsp;</div>
     <div style="float:right">
         <form action="#" th:action="@{/logout}" method="post">
-            <input type="submit" value="Logout" />
+            <input type="submit" value="Logout" onclick="clean()"/>
         </form>
     </div>
 </div>
@@ -25,5 +25,11 @@
 <div>
     <a href="/userinfo" th:href="@{/userinfo}">Display User Info</a>
 </div>
+<script>
+    function clean() {
+        localStorage.clear();
+        console.log('cleaning!');
+    }
+</script>
 </body>
 </html>
