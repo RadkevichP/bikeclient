@@ -11,7 +11,10 @@ spring:
             client-id: pts2-d.elinext.com
             client-secret: super_secret
             client-name: pts2-d.elinext.com
-            scope: openid email
+            scope:
+              - openid
+              - email
+              - profile
             provider: elinext-is
             redirect-uri-template: http://localhost:8082/login/oauth2/code/
             client-authentication-method: basic
