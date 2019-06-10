@@ -8,10 +8,10 @@ spring:
       client:
         registration:
           custom-client:
-            client-id: pts2.elinext.com
+            client-id: pts2-d.elinext.com
             client-secret: super_secret
-            client-name: pts2.elinext.com
-            scope: openid profile email
+            client-name: pts2-d.elinext.com
+            scope: openid email
             provider: elinext-is
             redirect-uri-template: http://localhost:8082/login/oauth2/code/
             client-authentication-method: basic

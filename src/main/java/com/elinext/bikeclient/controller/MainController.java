@@ -34,9 +34,10 @@ public class MainController {
     @RequestMapping("/")
     public String index(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient auth2AuthorizedClient = this.getAuthorizedClient(authentication);
-        log.info(authentication.toString());
-        log.info(authentication.getPrincipal().getClass().getName());
         log.info(auth2AuthorizedClient.getClientRegistration().getScopes().toString());
+        log.info(auth2AuthorizedClient.getAccessToken().getTokenValue());
+        auth2AuthorizedClient.getClientRegistration().getScopes().forEach(s -> log.info(s + " --- " + s.getClass()));
+        log.info(authentication.getPrincipal().getClass().getName());
         authentication.getPrincipal().getAttributes().forEach((k, v) -> log.info(k + " : " + v + v.getClass()));
         model.addAttribute("userName", authentication.getName());
         model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
