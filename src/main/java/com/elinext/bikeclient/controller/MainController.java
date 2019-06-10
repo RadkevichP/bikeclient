@@ -36,6 +36,7 @@ public class MainController {
         OAuth2AuthorizedClient auth2AuthorizedClient = this.getAuthorizedClient(authentication);
         log.info(authentication.toString());
         log.info(authentication.getPrincipal().getClass().getName());
+        log.info(auth2AuthorizedClient.getClientRegistration().getScopes().toString());
         authentication.getPrincipal().getAttributes().forEach((k, v) -> log.info(k + " : " + v + v.getClass()));
         model.addAttribute("userName", authentication.getName());
         model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
