@@ -12,17 +12,17 @@ spring:
             client-secret: super_secret
             client-name: pts2.elinext.com
             scope: openid profile email api1
-            provider: elinextis
+            provider: elinext-is
             redirect-uri-template: http://localhost:8082/login/oauth2/code/
             client-authentication-method: basic
             authorization-grant-type: authorization_code
         provider:
-          elinextis:
+          elinext-is:
             authorization-uri: http://212.98.165.50:11084/connect/authorize
             token-uri: http://212.98.165.50:11084/connect/token
             user-info-uri: http://212.98.165.50:11084/connect/userinfo
             jwk-set-uri: http://212.98.165.50:11084/.well-known/openid-configuration/jwks
-            user-name-attribute: given_name
+            user-name-attribute: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
 logging:
   level:
     root: info

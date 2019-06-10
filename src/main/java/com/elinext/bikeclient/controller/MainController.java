@@ -26,20 +26,16 @@ public class MainController {
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final Logger log = LoggerFactory.getLogger(MainController.class);
     private final String ROLE_CLAIM = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
-    private final String MANAGER_ROLE = "MANAGER";
 
     public MainController(OAuth2AuthorizedClientService authorizedClientService) {
         this.authorizedClientService = authorizedClientService;
     }
 
     @RequestMapping("/")
-    @PreAuthorize("isAuthenticated()")
-    //  @PreAuthorize("hasRole('ROLE_USER')") - doesn't work
-    //  @PreAuthorize("hasAuthority('ROLE_USER')") - works fine
-    //  @PreAuthorize("hasRole('MANAGER')") - doesn't work
     public String index(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient auth2AuthorizedClient = this.getAuthorizedClient(authentication);
         log.info(authentication.toString());
+        log.info(authentication.getPrincipal().getClass().getName());
         authentication.getPrincipal().getAttributes().forEach((k, v) -> log.info(k + " : " + v + v.getClass()));
         model.addAttribute("userName", authentication.getName());
         model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
@@ -79,6 +75,7 @@ public class MainController {
     @RequestMapping("/bikes")
     public String bikes(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient authorizedClient = this.getAuthorizedClient(authentication);
+        log.info(authorizedClient.getAccessToken().getTokenValue());
         List<Bike> bikes = WebClient.builder()
                 .filter(oauth2Credentials(authorizedClient))
                 .filter(logRequest())
