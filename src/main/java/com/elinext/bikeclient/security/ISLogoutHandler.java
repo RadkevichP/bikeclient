@@ -3,6 +3,7 @@ package com.elinext.bikeclient.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -19,6 +20,9 @@ public class ISLogoutHandler extends SecurityContextLogoutHandler {
     private final RestTemplate restTemplate;
     private final Logger log = LoggerFactory.getLogger(ISLogoutHandler.class);
 
+    @Value("${end-session-endpoint}")
+    private String endSessionEndpoint;
+
     public ISLogoutHandler(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -26,14 +30,10 @@ public class ISLogoutHandler extends SecurityContextLogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         super.logout(request, response, authentication);
-
         propagateLogoutToIS((OidcUser) authentication.getPrincipal());
-        log.info("session invalidated");
     }
 
     private void propagateLogoutToIS(OidcUser user) {
-
-        String endSessionEndpoint = "http://212.98.165.50:11084/connect/endsession";
 
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(endSessionEndpoint)
@@ -41,12 +41,9 @@ public class ISLogoutHandler extends SecurityContextLogoutHandler {
         log.info(builder.toUriString());
         ResponseEntity<String> logoutResponse = restTemplate.getForEntity(builder.toUriString(), String.class);
         if (logoutResponse.getStatusCode().is2xxSuccessful()) {
-            log.info(logoutResponse.toString());
-            log.info("Sucessfully logged out in IS");
+            log.info("Sucessfully logged out from IS");
         } else {
-            log.info(logoutResponse.toString());
             log.info("Logout from IS failed");
         }
-
     }
 }

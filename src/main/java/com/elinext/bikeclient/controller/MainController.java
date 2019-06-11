@@ -4,10 +4,12 @@ import com.elinext.bikeclient.model.Bike;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,9 @@ public class MainController {
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final Logger log = LoggerFactory.getLogger(MainController.class);
     private final String ROLE_CLAIM = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+    private static final String MANAGER_ROLE = "MANAGER";
+    private static final String ADMIN_ROLE = "ADMIN";
+
 
     public MainController(OAuth2AuthorizedClientService authorizedClientService) {
         this.authorizedClientService = authorizedClientService;
@@ -34,36 +39,33 @@ public class MainController {
     @RequestMapping("/")
     public String index(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient auth2AuthorizedClient = this.getAuthorizedClient(authentication);
-        log.info(auth2AuthorizedClient.getClientRegistration().getScopes().toString());
-        log.info(auth2AuthorizedClient.getAccessToken().getTokenValue());
-        auth2AuthorizedClient.getClientRegistration().getScopes().forEach(s -> log.info(s + " --- " + s.getClass()));
-        log.info(authentication.getPrincipal().getClass().getName());
-        authentication.getPrincipal().getAttributes().forEach((k, v) -> log.info(k + " : " + v + v.getClass()));
         model.addAttribute("userName", authentication.getName());
         model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
         return "index";
     }
 
-    @RequestMapping("/adminpage")
-    @PreAuthorize("authentication.getPrincipal().getAttributes()" +
-            ".containsKey('http://schemas.microsoft.com/ws/2008/06/identity/claims/role')")
-    public String adminpage(Model model, OAuth2AuthenticationToken authentication) {
-        Map userAttributes = authentication.getPrincipal().getAttributes();
-        model.addAttribute("userAttributes", userAttributes);
-        return "adminpage";
-    }
-
     @RequestMapping("/managerpage")
     @PreAuthorize("authentication.getPrincipal().getAttributes()" +
             ".containsKey('http://schemas.microsoft.com/ws/2008/06/identity/claims/role')")
-    public String managerpage(Model model, OAuth2AuthenticationToken authentication) {
+    public String managerPage(Model model, OAuth2AuthenticationToken authentication) {
         Map userAttributes = authentication.getPrincipal().getAttributes();
         List<String> roleClaims = (List<String>) authentication.getPrincipal().getAttributes().get(ROLE_CLAIM);
-        if (roleClaims.contains("MANAGER")) {
+        if (roleClaims.contains(MANAGER_ROLE)) {
             model.addAttribute("userAttributes", userAttributes);
             return "managerpage";
-        } else return "index";
+        } else  throw new AccessDeniedException("You shall not pass!");
+    }
 
+    @RequestMapping("/adminpage")
+    @PreAuthorize("authentication.getPrincipal().getAttributes()" +
+            ".containsKey('http://schemas.microsoft.com/ws/2008/06/identity/claims/role')")
+    public String adminPage(Model model, OAuth2AuthenticationToken authentication) {
+        Map userAttributes = authentication.getPrincipal().getAttributes();
+        List<String> roleClaims = (List<String>) authentication.getPrincipal().getAttributes().get(ROLE_CLAIM);
+        if (roleClaims.contains(ADMIN_ROLE)) {
+            model.addAttribute("userAttributes", userAttributes);
+            return "adminpage";
+        } else throw new AccessDeniedException("You shall not pass!");
     }
 
     @RequestMapping("/userinfo")

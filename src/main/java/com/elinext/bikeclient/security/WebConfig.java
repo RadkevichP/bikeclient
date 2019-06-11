@@ -1,6 +1,7 @@
 package com.elinext.bikeclient.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -9,14 +10,18 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class WebConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    ISLogoutHandler isLogoutHandler;
+    private ISLogoutHandler isLogoutHandler;
+
+    @Value("${logout-success-uri}")
+    private String logoutSuccessUri;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated()
+        http.
+                authorizeRequests().anyRequest().authenticated()
                 .and().logout()
                 .addLogoutHandler(isLogoutHandler)
-                .logoutSuccessUrl("http://212.98.165.50:11084/Account/Logout")
+                .logoutSuccessUrl("http://google.com")
                 .and().oauth2Client()
                 .and().oauth2Login();
     }
