@@ -2,6 +2,8 @@ package com.elinext.bikeclient.security;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
@@ -15,6 +17,8 @@ public class UserFeignClientInterceptor implements RequestInterceptor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TOKEN_TYPE = "Bearer";
     private final OAuth2AuthorizedClientService clientService;
+
+    private Logger log = LoggerFactory.getLogger(UserFeignClientInterceptor.class);
 
     public UserFeignClientInterceptor(OAuth2AuthorizedClientService clientService) {
         this.clientService = clientService;
@@ -30,5 +34,6 @@ public class UserFeignClientInterceptor implements RequestInterceptor {
 
         OAuth2AccessToken accessToken = client.getAccessToken();
         template.header(AUTHORIZATION_HEADER, String.format("%s %s", BEARER_TOKEN_TYPE, accessToken.getTokenValue()));
+        log.info(template.headers().toString());
     }
 }

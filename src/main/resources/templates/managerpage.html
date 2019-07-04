@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
 </head>
 <body>
-<div th:replace="index::logout"></div>
+<div th:replace="profile::logout"></div>
 <h1>OAuth 2.0 User Info</h1>
 <div>
     <span style="font-weight:bold">User Attributes:</span>
@@ -16,5 +16,10 @@
     </ul>
 </div>
 <h2>You're the best manager in our office!</h2>
+<script>
+    function cleanPage() {
+        sessionStorage.clear();
+    }
+</script>
 </body>
 </html>

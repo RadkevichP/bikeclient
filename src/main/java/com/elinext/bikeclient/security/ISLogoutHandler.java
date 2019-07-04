@@ -2,7 +2,6 @@ package com.elinext.bikeclient.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,6 +29,7 @@ public class ISLogoutHandler extends SecurityContextLogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         super.logout(request, response, authentication);
+
         propagateLogoutToIS((OidcUser) authentication.getPrincipal());
     }
 
@@ -37,13 +37,17 @@ public class ISLogoutHandler extends SecurityContextLogoutHandler {
 
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(endSessionEndpoint)
-                .queryParam("id_token_hint", user.getIdToken().getTokenValue());
+                .queryParam("id_token_hint", user.getIdToken().getTokenValue())
+                .queryParam("post_logout_redirect_uri", "http://localhost:8082/");
         log.info(builder.toUriString());
         ResponseEntity<String> logoutResponse = restTemplate.getForEntity(builder.toUriString(), String.class);
         if (logoutResponse.getStatusCode().is2xxSuccessful()) {
             log.info("Sucessfully logged out from IS");
+
         } else {
             log.info("Logout from IS failed");
         }
+
     }
+
 }

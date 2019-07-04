@@ -17,11 +17,9 @@ public class WebConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.
-                authorizeRequests().anyRequest().authenticated()
-                .and().logout()
-                .addLogoutHandler(isLogoutHandler)
-                .logoutSuccessUrl("http://google.com")
+        http.authorizeRequests()
+                .mvcMatchers("/", "/index").permitAll()
+                .anyRequest().authenticated()
                 .and().oauth2Client()
                 .and().oauth2Login();
     }

@@ -1,8 +1,6 @@
 server:
   port: 8082
 spring:
-  thymeleaf:
-    cache: false
   security:
     oauth2:
       client:
@@ -18,18 +16,18 @@ spring:
             authorization-grant-type: authorization_code
         provider:
           elinext-is:
-            authorization-uri: http://212.98.165.50:11084/connect/authorize
-            token-uri: http://212.98.165.50:11084/connect/token
-            user-info-uri: http://212.98.165.50:11084/connect/userinfo
-            jwk-set-uri: http://212.98.165.50:11084/.well-known/openid-configuration/jwks
+            authorization-uri: https://auth.elinext.com/connect/authorize
+            token-uri: https://auth.elinext.com/connect/token
+            user-info-uri: https://auth.elinext.com/connect/userinfo
+            jwk-set-uri: https://auth.elinext.com/.well-known/openid-configuration/jwks
             user-name-attribute: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
 logging:
   level:
     root: info
     org.springframework.web: info
 
-logout-success-uri: http://212.98.165.50:11084/Account/Logout
-end-session-endpoint: http://212.98.165.50:11084/connect/endsession
+logout-success-uri: https://auth.elinext.com/Account/Logout
+end-session-endpoint: https://auth.elinext.com/connect/endsession
       # security:
       #  oauth2:
       #   client:

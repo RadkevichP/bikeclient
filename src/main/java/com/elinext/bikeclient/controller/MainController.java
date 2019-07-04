@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,12 +37,16 @@ public class MainController {
         this.authorizedClientService = authorizedClientService;
     }
 
-    @RequestMapping("/")
-    public String index(Model model, OAuth2AuthenticationToken authentication) {
+    @RequestMapping(value = {"/", "/index"})
+    public String index() {
+        return "index";
+    }
+
+    @RequestMapping("/profile")
+    public String profile(Model model, OAuth2AuthenticationToken authentication) {
         OAuth2AuthorizedClient auth2AuthorizedClient = this.getAuthorizedClient(authentication);
         model.addAttribute("userName", authentication.getName());
-        model.addAttribute("clientName", auth2AuthorizedClient.getClientRegistration().getClientName());
-        return "index";
+        return "profile";
     }
 
     @RequestMapping("/managerpage")
@@ -50,10 +55,10 @@ public class MainController {
     public String managerPage(Model model, OAuth2AuthenticationToken authentication) {
         Map userAttributes = authentication.getPrincipal().getAttributes();
         List<String> roleClaims = (List<String>) authentication.getPrincipal().getAttributes().get(ROLE_CLAIM);
-        if (roleClaims.contains(MANAGER_ROLE)) {
+        if (!roleClaims.contains(MANAGER_ROLE)) {
             model.addAttribute("userAttributes", userAttributes);
             return "managerpage";
-        } else  throw new AccessDeniedException("You shall not pass!");
+        } else throw new AccessDeniedException("You shall not pass!");
     }
 
     @RequestMapping("/adminpage")
@@ -62,7 +67,7 @@ public class MainController {
     public String adminPage(Model model, OAuth2AuthenticationToken authentication) {
         Map userAttributes = authentication.getPrincipal().getAttributes();
         List<String> roleClaims = (List<String>) authentication.getPrincipal().getAttributes().get(ROLE_CLAIM);
-        if (roleClaims.contains(ADMIN_ROLE)) {
+        if (!roleClaims.contains(ADMIN_ROLE)) {
             model.addAttribute("userAttributes", userAttributes);
             return "adminpage";
         } else throw new AccessDeniedException("You shall not pass!");
@@ -73,6 +78,14 @@ public class MainController {
     public String userinfo(Model model, OAuth2AuthenticationToken authentication) {
         Map userAttributes = authentication.getPrincipal().getAttributes();
         model.addAttribute("userAttributes", userAttributes);
+
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+                authentication.getAuthorizedClientRegistrationId(),
+                authentication.getName());
+        OAuth2AccessToken accessToken = client.getAccessToken();
+
+        String token = accessToken.getTokenValue();
+        model.addAttribute("token", token);
         return "userinfo";
     }
 

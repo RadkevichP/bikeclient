@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title>Spring Security - OAuth 2.0 Login</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()">
+    <div style="float:left">
+        <span style="font-weight:bold">User: </span><span sec:authentication="name"></span>
+    </div>
+    <div style="float:none">&nbsp;</div>
+    <div style="float:right">
+        <form action="#" th:action="@{/signout}" method="post">
+            <input type="submit" value="Logout" onclick="(function(){
+                sessionStorage.clear()
+                })()"/>
+        </form>
+    </div>
+</div>
+<h1>OAuth 2.0 Login with Spring Security</h1>
+<div>
+    You are successfully logged in <span style="font-weight:bold" th:text="${userName}"></span>
+    via the OAuth 2.0 Client <span style="font-weight:bold" th:text="${clientName}"></span>
+</div>
+<div>&nbsp;</div>
+<div>
+    <a href="/userinfo" th:href="@{/userinfo}">Display User Info</a>
+</div>
+<button th:type="button" onclick="printCookies()">Print cookies</button>
+
+
+<!--<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script> -->
+<script>
+    function printCookies() {
+        console.log(sessionStorage.getItem('a'));
+    }
+</script>
+
+</body>
+</html>
